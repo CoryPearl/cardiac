@@ -1,3 +1,4 @@
+//Version 1.1
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
@@ -313,26 +314,21 @@ int has_asmc_extension(const char *filename) {
     const char *dot = strrchr(filename, '.');
     return dot && !strcmp(dot, ".asmc");
 }
+
 // Main
 int main(int argc, char *argv[]) {
-    if (!has_asmc_extension(argv[1])) {
-        fprintf(stderr, "cardiac: error: '%s' is not a .asmc file\n", argv[1]);
-        return 1;
-    }
 
+    // 1️⃣ Handle flags FIRST
     if (argc == 2 && !strcmp(argv[1], "--help")) {
         printf(
-            "cardiac — CARDIAC-like assembler & VM\n"
-            "\n"
+            "cardiac — CARDIAC-like assembler & VM\n\n"
             "Usage:\n"
-            "  cardiac <program.asmc> [-in deck.txt]\n"
-            "\n"
+            "  cardiac <program.asmc> [-in deck.txt]\n\n"
             "Options:\n"
             "  -in <file>      Input deck file (default: deck.txt)\n"
-            "  --help          Show this help and exit\n"
-            "  --version       Show version information\n"
+            "  --help          Show this help\n"
+            "  --version       Show version\n"
         );
-        
         return 0;
     }
 
@@ -340,12 +336,29 @@ int main(int argc, char *argv[]) {
         printf("cardiac version 0.1.0\n");
         return 0;
     }
+
+    // 2️⃣ Then require a program
+    if (argc < 2) {
+        fprintf(stderr, "Usage: cardiac <program.asmc> [-in deck.txt]\n");
+        return 1;
+    }
+
+    // 3️⃣ THEN enforce .asmc
+    if (!has_asmc_extension(argv[1])) {
+        fprintf(stderr, "cardiac: error: '%s' is not a .asmc file\n", argv[1]);
+        return 1;
+    }
+
+    // 4️⃣ Normal execution
     const char *asm_file = argv[1];
-    const char *deck_file = "deck.txt"; // default
+    const char *deck_file = "deck.txt";
 
     for (int i = 2; i < argc; i++) {
         if (!strcmp(argv[i], "-in") && i + 1 < argc) {
             deck_file = argv[++i];
+        } else {
+            fprintf(stderr, "Unknown option: %s\n", argv[i]);
+            return 1;
         }
     }
 

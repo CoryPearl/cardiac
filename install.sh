@@ -1,7 +1,7 @@
 #!/bin/sh
 set -e
 
-BIN_URL="https://github.com/CoryPearl/cardiac/releases/download/asm/cardiac"
+BIN_URL="https://github.com/yourname/cardiac/releases/latest/download/cardiac"
 INSTALL_DIR="/usr/local/bin"
 
 echo "Installing cardiac..."

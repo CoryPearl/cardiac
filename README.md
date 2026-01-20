@@ -6,20 +6,26 @@ A custom assembly language interpreter for the CARDIAC (CARDboard Illustrative A
 
 This project implements a CARDIAC assembly language interpreter with support for variables, labels, and structured control flow. Programs are written in `.asmc` files and executed by the interpreter.
 
-## Building
+## Running and Downloading
 
-Compile the interpreter with:
+## Download
+
+You can download the latest release binary directly from GitHub:
 
 ```bash
-gcc -o main main.c
+curl -fsSL https://raw.githubusercontent.com/CoryPearl/cardiac/main/install.sh | sh
 ```
 
-## Running
-
-Place your assembly program in `main.asmc` and run:
+Then run it as so:
 
 ```bash
-./main
+cardiac file_name.asmc
+```
+
+You can optinaly add the -in tag to add a deck as input like so:
+
+```bash
+cardiac file_name.asmc -in deck_name.txt
 ```
 
 The interpreter will execute the program and display output to stdout.
@@ -28,18 +34,18 @@ The interpreter will execute the program and display output to stdout.
 
 ### Commands
 
-| Instruction | Description | Example |
-|------------|-------------|---------|
-| **IN** | Input a card into memory | `IN 10` |
-| **LOAD** | Load from memory to accumulator | `LOAD x` |
-| **ADD** | Add memory value to accumulator | `ADD 5` |
-| **SUB** | Subtract memory from accumulator | `SUB x` |
-| **STORE** | Store accumulator to memory address | `STORE x` |
-| **TEST** | If accumulator is negative, jump to address/label | `TEST loop` |
-| **SHIFT** | Shift accumulator by decimal places (left and right) | `SHIFT 12` # Left 1, Right 1 |
-| **OUT** | Print a memory address value | `OUT x` |
-| **JUMP** | Jump to memory address/label | `JUMP start` |
-| **HALT** | Stop program execution | `HALT` |
+| Instruction | Description                                          | Example                      |
+| ----------- | ---------------------------------------------------- | ---------------------------- |
+| **IN**      | Input a card into memory                             | `IN 10`                      |
+| **LOAD**    | Load from memory to accumulator                      | `LOAD x`                     |
+| **ADD**     | Add memory value to accumulator                      | `ADD 5`                      |
+| **SUB**     | Subtract memory from accumulator                     | `SUB x`                      |
+| **STORE**   | Store accumulator to memory address                  | `STORE x`                    |
+| **TEST**    | If accumulator is negative, jump to address/label    | `TEST loop`                  |
+| **SHIFT**   | Shift accumulator by decimal places (left and right) | `SHIFT 12` # Left 1, Right 1 |
+| **OUT**     | Print a memory address value                         | `OUT x`                      |
+| **JUMP**    | Jump to memory address/label                         | `JUMP start`                 |
+| **HALT**    | Stop program execution                               | `HALT`                       |
 
 ### Memory Layout
 
@@ -78,12 +84,14 @@ labelname: INSTRUCTION operand
 Labels can appear in two ways:
 
 1. **On the same line as an instruction** (recommended):
+
 ```asmc
 start: OUT x # Label and instruction on same line
 loop: LOAD y # Another label with instruction
 ```
 
 2. **On their own line** (if followed by instructions later):
+
 ```asmc
 loop:        # Label on its own line
 LOAD x       # Instruction follows on next line
@@ -131,6 +139,7 @@ loop: HALT   # Jump target
 - **Label names**: Can contain letters, numbers, and underscores (same rules as variable names)
 - **Case sensitivity**: Label names are case-sensitive (`Start:` and `start:` are different)
 - **Forward references**: Labels can be used before they are defined:
+
 ```asmc
 JUMP later   # Jump forward to a label defined later
 # ... more code ...
@@ -138,6 +147,7 @@ later: OUT x # Label defined here
 ```
 
 - **Backward references**: Labels can jump backwards to create loops:
+
 ```asmc
 loop: OUT x  # Label definition
 # ... more code ...
@@ -145,6 +155,7 @@ JUMP loop    # Jump back to loop
 ```
 
 - **Multiple labels**: You can have multiple labels in your program:
+
 ```asmc
 start: LOAD x
 middle: ADD y
@@ -154,6 +165,7 @@ end: STORE z
 #### Common Label Patterns
 
 **Simple Loop:**
+
 ```asmc
 start: OUT counter
 ADD one
@@ -162,6 +174,7 @@ JUMP start   # Loop back to start
 ```
 
 **Conditional Loop:**
+
 ```asmc
 start: LOAD counter
 OUT counter
@@ -177,6 +190,7 @@ done: HALT   # Exit when done
 ```
 
 **Function-like Jump:**
+
 ```asmc
 # Main code
 LOAD x
@@ -224,6 +238,7 @@ loop: HALT # Stop when done
 ```
 
 This program will output:
+
 ```
 1
 2
