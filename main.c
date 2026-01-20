@@ -4,10 +4,14 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <string.h>
+#include <sys/stat.h>
 
 #define MEM_SIZE 100    // total number of memory cells
 #define DECK_SIZE 100   // total number of input cards
 #define MAX_VARS 9
+#define VERSION "0.1.1"
+#define INSTALLER_URL "https://raw.githubusercontent.com/CoryPearl/cardiac/main/install.sh"
+
 
 // Holds the deck data and current reading position
 typedef struct {
@@ -315,27 +319,62 @@ int has_asmc_extension(const char *filename) {
     return dot && !strcmp(dot, ".asmc");
 }
 
+
+void uninstall() {
+    const char *path = "/usr/local/bin/cardiac";
+    if (access(path, F_OK) == 0) {
+        printf("Removing cardiac from %s\n", path);
+        if (remove(path) == 0) {
+            printf("cardiac uninstalled successfully.\n");
+        } else {
+            perror("Failed to uninstall cardiac");
+        }
+    } else {
+        printf("cardiac is not installed.\n");
+    }
+}
+
+void update() {
+    printf("Updating cardiac to latest version...\n");
+    char cmd[512];
+    snprintf(cmd, sizeof(cmd),
+        "curl -fsSL %s | sh", INSTALLER_URL);
+    system(cmd);
+}
+
 // Main
 int main(int argc, char *argv[]) {
 
-    if (argc == 2 && !strcmp(argv[1], "--help")) {
-        printf(
-            "cardiac — CARDIAC-like assembler & VM\n\n"
-            "Usage:\n"
-            "  cardiac <program.asmc> [-in deck.txt]\n\n"
-            "Options:\n"
-            "  -in <file>      Input deck file (default: deck.txt)\n"
-            "  --help          Show this help\n"
-            "  --version       Show version\n"
-        );
-        return 0;
+    // Handle global flags first
+    if (argc == 2) {
+        if (!strcmp(argv[1], "--help")) {
+            printf(
+                "cardiac — CARDIAC-like assembler & VM\n\n"
+                "Usage:\n"
+                "  cardiac <program.asmc> [-in deck.txt]\n\n"
+                "Options:\n"
+                "  --help        Show this help\n"
+                "  --version     Show version\n"
+                "  --uninstall   Remove cardiac from system\n"
+                "  --update      Update cardiac to latest version\n"
+            );
+            return 0;
+        }
+        if (!strcmp(argv[1], "--version")) {
+            printf("cardiac version %s\n", VERSION);
+            return 0;
+        }
+        if (!strcmp(argv[1], "--uninstall")) {
+            uninstall();
+            return 0;
+        }
+        if (!strcmp(argv[1], "--update")) {
+            update();
+            return 0;
+        }
     }
 
-    if (argc == 2 && !strcmp(argv[1], "--version")) {
-        printf("cardiac version 0.1.1\n");
-        return 0;
-    }
-
+    // Existing .asmc validation and execution
     if (argc < 2) {
         fprintf(stderr, "Usage: cardiac <program.asmc> [-in deck.txt]\n");
         return 1;
