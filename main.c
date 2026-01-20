@@ -1,4 +1,4 @@
-//Version 1.2
+//Version 1.3
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
@@ -9,7 +9,7 @@
 #define MEM_SIZE 100    // total number of memory cells
 #define DECK_SIZE 100   // total number of input cards
 #define MAX_VARS 9
-#define VERSION "0.1.2"
+#define VERSION "0.1.3"
 #define INSTALLER_URL "https://raw.githubusercontent.com/CoryPearl/cardiac/main/install.sh"
 
 
@@ -354,7 +354,16 @@ int has_asmc_extension(const char *filename) {
 // Placeholder: put your existing CPU, assemble, run functions here
 void run_cardiac(const char *asm_file, const char *deck_file) {
     // Your interpreter logic
-    printf("Running %s with deck %s\n", asm_file, deck_file);
+    CPU cpu = {0};
+    Deck deck = {0};
+
+    cpu.running = 1;
+    cpu.pc = 10;
+
+    assemble(asm_file, &cpu);
+    load_deck(&deck, deck_file);
+    cpu.memory[0] = 1;
+    run(&cpu, &deck);
 }
 
 int main(int argc, char *argv[]) {
@@ -370,7 +379,7 @@ int main(int argc, char *argv[]) {
                 "  --help        Show this help\n"
                 "  --version     Show version\n"
                 "  --update      Update to latest version\n"
-                "  --uninstall   Remove cardiac from system\n"
+                "  --uninstall   Remove cardiac from system (run with sudo)\n"
             );
             return 0;
         }

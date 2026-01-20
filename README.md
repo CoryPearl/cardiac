@@ -36,18 +36,18 @@ The interpreter will execute the program and display output to stdout.
 
 ### Commands
 
-| Instruction | Description                                          | Example                      |
-| ----------- | ---------------------------------------------------- | ---------------------------- |
-| **IN**      | Input a card into memory                             | `IN 10`                      |
-| **LOAD**    | Load from memory to accumulator                      | `LOAD x`                     |
-| **ADD**     | Add memory value to accumulator                      | `ADD 5`                      |
-| **SUB**     | Subtract memory from accumulator                     | `SUB x`                      |
-| **STORE**   | Store accumulator to memory address                  | `STORE x`                    |
-| **TEST**    | If accumulator is negative, jump to address/label    | `TEST loop`                  |
-| **SHIFT**   | Shift accumulator by decimal places (left and right) | `SHIFT 12` # Left 1, Right 1 |
-| **OUT**     | Print a memory address value                         | `OUT x`                      |
-| **JUMP**    | Jump to memory address/label                         | `JUMP start`                 |
-| **HALT**    | Stop program execution                               | `HALT`                       |
+| Instruction | Description                                          | Example                         |
+| ----------- | ---------------------------------------------------- | ------------------------------- |
+| **IN**      | Input a card into memory                             | `IN x or IN mem_location`       |
+| **LOAD**    | Load from memory to accumulator                      | `LOAD x or LOAD mem_location`   |
+| **ADD**     | Add memory value to accumulator                      | `ADD x or ADD mem_location`     |
+| **SUB**     | Subtract memory from accumulator                     | `SUB x or SUB mem_location`     |
+| **STORE**   | Store accumulator to memory address                  | `STORE x or STORE mem_location` |
+| **TEST**    | If accumulator is negative, jump to address/label    | `TEST loop`                     |
+| **SHIFT**   | Shift accumulator by decimal places (left and right) | `SHIFT 12` # Left 1, Right 1    |
+| **OUT**     | Print a memory address value                         | `OUT x or OUT mem_location`     |
+| **JUMP**    | Jump to memory address/label                         | `JUMP start`                    |
+| **HALT**    | Stop program execution                               | `HALT`                          |
 
 ### Memory Layout
 
