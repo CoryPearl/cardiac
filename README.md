@@ -12,8 +12,16 @@ This project implements a CARDIAC assembly language interpreter with support for
 
 You can download the latest release binary directly from GitHub:
 
+MacOS / Linux:
+
 ```bash
 curl -fsSL https://raw.githubusercontent.com/CoryPearl/cardiac/main/install.sh | sh
+```
+
+Windows:
+
+```bash
+powershell -Command "Invoke-WebRequest -Uri https://github.com/CoryPearl/cardiac/releases/latest/download/cardiac.exe -OutFile '%BIN_PATH%'"
 ```
 
 ### Running

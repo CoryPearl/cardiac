@@ -6,6 +6,12 @@
 #include <string.h>
 #include <sys/stat.h>
 
+#ifdef _WIN32
+#define OS_WINDOWS 1
+#else
+#define OS_WINDOWS 0
+#endif
+
 #define MEM_SIZE 100    // total number of memory cells
 #define DECK_SIZE 100   // total number of input cards
 #define MAX_VARS 9
@@ -65,16 +71,16 @@ short get_label_addr(const char *name) {
 
 // Get opcode from instruction
 short opcode_from_command(const char *m) {
-    if (!strcmp(m, "IN")) return 0;
-    if (!strcmp(m, "LOAD")) return 1;
+    if (!strcmp(m, "IN") || !strcmp(m, "INP")) return 0;
+    if (!strcmp(m, "LOAD") || !strcmp(m, "CLA")) return 1;
     if (!strcmp(m, "ADD")) return 2;
-    if (!strcmp(m, "TEST")) return 3;
-    if (!strcmp(m, "SHIFT")) return 4;
+    if (!strcmp(m, "TEST") || !strcmp(m, "TAC")) return 3;
+    if (!strcmp(m, "SHIFT") || !strcmp(m, "SFT")) return 4;
     if (!strcmp(m, "OUT")) return 5;
-    if (!strcmp(m, "STORE")) return 6;
+    if (!strcmp(m, "STORE") || !strcmp(m, "STO")) return 6;
     if (!strcmp(m, "SUB")) return 7;
-    if (!strcmp(m, "JUMP")) return 8;
-    if (!strcmp(m, "HALT")) return 9;
+    if (!strcmp(m, "JUMP") || !strcmp(m, "JMP")) return 8;
+    if (!strcmp(m, "HALT") || !strcmp(m, "hrs")) return 9;
     return -1;
 }
 
@@ -314,36 +320,55 @@ void load_deck(Deck *deck, const char *filename) {
     fclose(fptr);
 }
 
+void update() {
+    printf("Updating cardiac to latest version...\n");
+
+    if (OS_WINDOWS) {
+        // Use PowerShell to fetch the latest install.bat
+        int ret = system(
+            "powershell -Command "
+            "\"Invoke-WebRequest -Uri https://raw.githubusercontent.com/CoryPearl/cardiac/main/install.bat "
+            "-OutFile install.bat; Start-Process install.bat -Wait\""
+        );
+
+        if (ret != 0) {
+            fprintf(stderr, "Failed to update cardiac on Windows.\n");
+        }
+
+    } else {
+        int ret = system("curl -fsSL https://raw.githubusercontent.com/CoryPearl/cardiac/main/install.sh | sh");
+        if (ret != 0) {
+            fprintf(stderr, "Failed to update cardiac on macOS/Linux.\n");
+        }
+    }
+
+    printf("Update complete.\n");
+}
+
 void uninstall() {
-    const char *path = "/usr/local/bin/cardiac";
+    if (OS_WINDOWS) {
+        printf("Uninstalling cardiac from Windows...\n");
 
-    if (access(path, F_OK) == 0) {
-        printf("Removing cardiac from %s\n", path);
+        int ret = system(
+            "powershell -Command "
+            "\"Start-Process powershell -ArgumentList 'del /F /Q \\\"%ProgramFiles%\\\\Cardiac\\\\cardiac.exe\\\"' -Verb RunAs -Wait\""
+        );
 
+        if (ret != 0) {
+            fprintf(stderr, "Failed to uninstall cardiac on Windows.\n");
+        } else {
+            printf("cardiac uninstalled successfully.\n");
+        }
+
+    } else {
+        // Linux/macOS: use sudo if needed
+        const char *path = "/usr/local/bin/cardiac";
         if (access(path, W_OK) != 0) {
-            printf("Requesting sudo to remove...\n");
             char cmd[512];
             snprintf(cmd, sizeof(cmd), "sudo rm -f %s", path);
             system(cmd);
-            printf("cardiac uninstalled successfully.\n");
-            return;
-        }
-
-        if (remove(path) == 0)
-            printf("cardiac uninstalled successfully.\n");
-        else
-            perror("Failed to uninstall");
-    } else {
-        printf("cardiac is not installed.\n");
+        } else remove(path);
     }
-}
-
-
-void update() {
-    printf("Updating cardiac to latest version...\n");
-    char cmd[512];
-    snprintf(cmd, sizeof(cmd), "curl -fsSL %s | sh", INSTALLER_URL);
-    system(cmd);
 }
 
 int has_asmc_extension(const char *filename) {
