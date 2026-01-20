@@ -316,14 +316,28 @@ void load_deck(Deck *deck, const char *filename) {
 
 void uninstall() {
     const char *path = "/usr/local/bin/cardiac";
+
     if (access(path, F_OK) == 0) {
         printf("Removing cardiac from %s\n", path);
-        if (remove(path) == 0) printf("cardiac uninstalled successfully.\n");
-        else perror("Failed to uninstall");
+
+        if (access(path, W_OK) != 0) {
+            printf("Requesting sudo to remove...\n");
+            char cmd[512];
+            snprintf(cmd, sizeof(cmd), "sudo rm -f %s", path);
+            system(cmd);
+            printf("cardiac uninstalled successfully.\n");
+            return;
+        }
+
+        if (remove(path) == 0)
+            printf("cardiac uninstalled successfully.\n");
+        else
+            perror("Failed to uninstall");
     } else {
         printf("cardiac is not installed.\n");
     }
 }
+
 
 void update() {
     printf("Updating cardiac to latest version...\n");
