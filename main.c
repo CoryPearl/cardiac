@@ -1,4 +1,3 @@
-// Add labels to jump to, always start at start
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
@@ -300,8 +299,8 @@ void run(CPU *cpu, Deck *deck) {
 }
 
 // Load deck
-void load_deck(Deck *deck) {
-    FILE *fptr = fopen("deck.txt", "r");
+void load_deck(Deck *deck, const char *filename) {
+    FILE *fptr = fopen(filename, "r");
     if (!fptr) { deck->deck_counter = 0; return; }
     short counter = 0, number;
     while (counter < DECK_SIZE && fscanf(fptr, "%hd", &number) == 1)
@@ -310,18 +309,56 @@ void load_deck(Deck *deck) {
     fclose(fptr);
 }
 
+int has_asmc_extension(const char *filename) {
+    const char *dot = strrchr(filename, '.');
+    return dot && !strcmp(dot, ".asmc");
+}
 // Main
-int main() {
+int main(int argc, char *argv[]) {
+    if (!has_asmc_extension(argv[1])) {
+        fprintf(stderr, "cardiac: error: '%s' is not a .asmc file\n", argv[1]);
+        return 1;
+    }
+
+    if (argc == 2 && !strcmp(argv[1], "--help")) {
+        printf(
+            "cardiac — CARDIAC-like assembler & VM\n"
+            "\n"
+            "Usage:\n"
+            "  cardiac <program.asmc> [-in deck.txt]\n"
+            "\n"
+            "Options:\n"
+            "  -in <file>      Input deck file (default: deck.txt)\n"
+            "  --help          Show this help and exit\n"
+            "  --version       Show version information\n"
+        );
+        
+        return 0;
+    }
+
+    if (argc == 2 && !strcmp(argv[1], "--version")) {
+        printf("cardiac version 0.1.0\n");
+        return 0;
+    }
+    const char *asm_file = argv[1];
+    const char *deck_file = "deck.txt"; // default
+
+    for (int i = 2; i < argc; i++) {
+        if (!strcmp(argv[i], "-in") && i + 1 < argc) {
+            deck_file = argv[++i];
+        }
+    }
+
     CPU cpu = {0};
     Deck deck = {0};
 
     cpu.running = 1;
     cpu.pc = 10;
 
-    assemble("main.asmc", &cpu);
-    load_deck(&deck);
+    assemble(asm_file, &cpu);
+    load_deck(&deck, deck_file);
     cpu.memory[0] = 1;
-    run(&cpu, &deck);
 
+    run(&cpu, &deck);
     return 0;
 }
