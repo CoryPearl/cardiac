@@ -13,7 +13,7 @@ This project implements a CARDIAC assembly language interpreter with support for
 You can download the latest release binary directly from GitHub:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/CoryPearl/cardiac/main/install.sh -o install.sh | sh
+curl -fsSL https://raw.githubusercontent.com/CoryPearl/cardiac/main/install.sh | sh
 ```
 
 ### Running

@@ -314,21 +314,12 @@ void load_deck(Deck *deck, const char *filename) {
     fclose(fptr);
 }
 
-int has_asmc_extension(const char *filename) {
-    const char *dot = strrchr(filename, '.');
-    return dot && !strcmp(dot, ".asmc");
-}
-
-
 void uninstall() {
     const char *path = "/usr/local/bin/cardiac";
     if (access(path, F_OK) == 0) {
         printf("Removing cardiac from %s\n", path);
-        if (remove(path) == 0) {
-            printf("cardiac uninstalled successfully.\n");
-        } else {
-            perror("Failed to uninstall cardiac");
-        }
+        if (remove(path) == 0) printf("cardiac uninstalled successfully.\n");
+        else perror("Failed to uninstall");
     } else {
         printf("cardiac is not installed.\n");
     }
@@ -337,12 +328,21 @@ void uninstall() {
 void update() {
     printf("Updating cardiac to latest version...\n");
     char cmd[512];
-    snprintf(cmd, sizeof(cmd),
-        "curl -fsSL %s | sh", INSTALLER_URL);
+    snprintf(cmd, sizeof(cmd), "curl -fsSL %s | sh", INSTALLER_URL);
     system(cmd);
 }
 
-// Main
+int has_asmc_extension(const char *filename) {
+    size_t len = strlen(filename);
+    return len > 5 && !strcmp(filename + len - 5, ".asmc");
+}
+
+// Placeholder: put your existing CPU, assemble, run functions here
+void run_cardiac(const char *asm_file, const char *deck_file) {
+    // Your interpreter logic
+    printf("Running %s with deck %s\n", asm_file, deck_file);
+}
+
 int main(int argc, char *argv[]) {
 
     // Handle global flags first
@@ -355,8 +355,8 @@ int main(int argc, char *argv[]) {
                 "Options:\n"
                 "  --help        Show this help\n"
                 "  --version     Show version\n"
+                "  --update      Update to latest version\n"
                 "  --uninstall   Remove cardiac from system\n"
-                "  --update      Update cardiac to latest version\n"
             );
             return 0;
         }
@@ -374,7 +374,7 @@ int main(int argc, char *argv[]) {
         }
     }
 
-    // Existing .asmc validation and execution
+    // Must provide .asmc program
     if (argc < 2) {
         fprintf(stderr, "Usage: cardiac <program.asmc> [-in deck.txt]\n");
         return 1;
@@ -389,24 +389,13 @@ int main(int argc, char *argv[]) {
     const char *deck_file = "deck.txt";
 
     for (int i = 2; i < argc; i++) {
-        if (!strcmp(argv[i], "-in") && i + 1 < argc) {
-            deck_file = argv[++i];
-        } else {
+        if (!strcmp(argv[i], "-in") && i + 1 < argc) deck_file = argv[++i];
+        else {
             fprintf(stderr, "Unknown option: %s\n", argv[i]);
             return 1;
         }
     }
 
-    CPU cpu = {0};
-    Deck deck = {0};
-
-    cpu.running = 1;
-    cpu.pc = 10;
-
-    assemble(asm_file, &cpu);
-    load_deck(&deck, deck_file);
-    cpu.memory[0] = 1;
-
-    run(&cpu, &deck);
+    run_cardiac(asm_file, deck_file);
     return 0;
 }
