@@ -1,4 +1,4 @@
-//Version 1.3
+//Version 1.4
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
@@ -15,7 +15,7 @@
 #define MEM_SIZE 100    // total number of memory cells
 #define DECK_SIZE 100   // total number of input cards
 #define MAX_VARS 9
-#define VERSION "0.1.3"
+#define VERSION "0.1.4"
 #define INSTALLER_URL "https://raw.githubusercontent.com/CoryPearl/cardiac/main/install.sh"
 
 
