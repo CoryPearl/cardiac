@@ -8,13 +8,15 @@ This project implements a CARDIAC assembly language interpreter with support for
 
 ## Running and Downloading
 
-## Download
+### Download
 
 You can download the latest release binary directly from GitHub:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/CoryPearl/cardiac/main/install.sh | sh
 ```
+
+### Running
 
 Then run it as so:
 
@@ -254,11 +256,7 @@ This program will output:
 
 ## File Format
 
-Programs are written in `.asmc` files. The interpreter reads from `main.asmc` by default.
-
-## Input Deck (Optional)
-
-You can optionally create a `deck.txt` file to provide input cards for the `IN` instruction. Each line should contain a single number.
+Programs are written in `.asmc` files. (Asembly Cardiac)
 
 ## License
 
