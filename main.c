@@ -318,7 +318,6 @@ int has_asmc_extension(const char *filename) {
 // Main
 int main(int argc, char *argv[]) {
 
-    // 1️⃣ Handle flags FIRST
     if (argc == 2 && !strcmp(argv[1], "--help")) {
         printf(
             "cardiac — CARDIAC-like assembler & VM\n\n"
@@ -333,23 +332,20 @@ int main(int argc, char *argv[]) {
     }
 
     if (argc == 2 && !strcmp(argv[1], "--version")) {
-        printf("cardiac version 0.1.0\n");
+        printf("cardiac version 0.1.1\n");
         return 0;
     }
 
-    // 2️⃣ Then require a program
     if (argc < 2) {
         fprintf(stderr, "Usage: cardiac <program.asmc> [-in deck.txt]\n");
         return 1;
     }
 
-    // 3️⃣ THEN enforce .asmc
     if (!has_asmc_extension(argv[1])) {
         fprintf(stderr, "cardiac: error: '%s' is not a .asmc file\n", argv[1]);
         return 1;
     }
 
-    // 4️⃣ Normal execution
     const char *asm_file = argv[1];
     const char *deck_file = "deck.txt";
 
